@@ -6,6 +6,7 @@ Reads project data and produces a structured Risk Report + JSON for the dashboar
 import json
 import os
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -55,24 +56,35 @@ exactly like this (no extra text around it):
 ```
 """
 
+    api_key = os.environ.get("XAI_API_KEY")
+    if not api_key:
+        print("ERROR: XAI_API_KEY is not set. Add it under Settings → Secrets → Actions.", file=sys.stderr)
+        sys.exit(1)
+
     client = OpenAI(
-        api_key=os.environ.get("XAI_API_KEY"),
+        api_key=api_key,
         base_url="https://api.x.ai/v1",
     )
 
-    print("Sending data to Grok for risk analysis...")
-    response = client.chat.completions.create(
-        model="grok-4.5",
-        max_tokens=3000,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-    )
+    # Prefer a widely available model id; override with XAI_MODEL if needed
+    model = os.environ.get("XAI_MODEL", "grok-3")
+
+    print(f"Sending data to Grok ({model}) for risk analysis...")
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            max_tokens=3000,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_content},
+            ],
+        )
+    except Exception as e:
+        print(f"ERROR calling xAI API: {e}", file=sys.stderr)
+        sys.exit(1)
 
     full_text = response.choices[0].message.content or ""
 
-    # Save full Markdown report (strip the JSON block for clean MD if present)
     md_report = full_text
     json_match = re.search(r"```json\s*(\{.*?\})\s*```", full_text, re.DOTALL)
     if json_match:
@@ -83,7 +95,6 @@ exactly like this (no extra text around it):
     out_md.write_text(md_report)
     print(f"Risk report written → {out_md}")
 
-    # Extract / save structured JSON for the dashboard
     risk_json = None
     if json_match:
         try:
