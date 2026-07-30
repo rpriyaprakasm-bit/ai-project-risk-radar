@@ -95,48 +95,37 @@
   </div>
 
   <script>
-    // Uneven distribution for realistic demo graphs:
-    // Blocker 4 | Schedule 3 | People 3 | Quality 2 | Scope 2 | Communication 1  → 15 risks
+    // Layout matches your screenshot (tiles + pie + bars on top).
+    // Uneven counts: Blocker 4 | Schedule 3 | People 3 | Quality 2 | Scope 2 | Communication 1
     const sampleData = {
       date: "2026-07-30",
       overall_risk_level: "High",
       summary: "Delivery is under heavy pressure. Blockers dominate the risk profile (payment keys, third-party SLA, legal review, design system lock). Schedule slips and a single-person knowledge bottleneck compound the problem. Quality debt and late scope changes are secondary but growing.",
       risks: [
-        // --- Blocker (4) ---
-        { title: "Payment gateway blocked for 20+ days — past due date", category: "Blocker", severity: "Critical", confidence: "High", evidence: "Issue #42 labeled blocker + high-priority. Created 2026-07-10, due 2026-07-25 (missed). Waiting on production API keys from the provider.", recommended_action: "Escalate to the payment provider account manager today. Ship a sandbox/mock path so frontend and QA are unblocked." },
-        { title: "Third-party KYC vendor SLA breached — identity checks offline", category: "Blocker", severity: "High", confidence: "High", evidence: "Issue #61 open 9 days. Vendor response time exceeded contracted 48h SLA. Signup funnel blocked for EU users.", recommended_action: "Invoke contractual escalation. Enable temporary manual KYC path for high-value signups." },
-        { title: "Legal review blocking public beta launch copy", category: "Blocker", severity: "High", confidence: "Medium", evidence: "Issue #67 waiting on Legal for 11 days. Marketing pages cannot go live. No owner assigned on Legal side.", recommended_action: "Book a 30-minute review slot with Legal this week. Prepare a redline version in advance." },
-        { title: "Design system package unpublished — UI work stalled", category: "Blocker", severity: "Medium", confidence: "High", evidence: "Issue #70: internal design-system npm package failed publish. Three feature PRs blocked on missing components.", recommended_action: "Hotfix the publish pipeline or pin a local tarball so feature work can continue." },
-
-        // --- Schedule (3) ---
-        { title: "Database migration for new order schema still open past deadline", category: "Schedule", severity: "High", confidence: "High", evidence: "Issue #29 labeled backend + high-priority + database. Created 2026-07-01, due 2026-07-20 (missed). Required before new order flow ships.", recommended_action: "Treat as release-blocking. Pair for knowledge transfer. Hard completion date within 5 business days." },
-        { title: "Mobile release window missed — app store review not started", category: "Schedule", severity: "High", confidence: "High", evidence: "Issue #58 due 2026-07-22 (missed). Build is ready but App Store / Play submission checklist incomplete.", recommended_action: "Complete store assets today and submit. Communicate revised launch date to stakeholders." },
-        { title: "Sprint commitments at 140% capacity for two consecutive sprints", category: "Schedule", severity: "Medium", confidence: "Medium", evidence: "Velocity board shows planned vs completed gap of 40%. Carry-over items growing each sprint.", recommended_action: "Cut lowest-priority items from next sprint. Protect buffer for blockers and support." },
-
-        // --- People (3) ---
-        { title: "Critical work concentrated on a single person (bus factor = 1)", category: "People", severity: "Critical", confidence: "High", evidence: "Alice is sole assignee on #29, #42, and #55. She owns PR #88. No secondary owner for the order schema.", recommended_action: "Pair Alice this sprint. Document schema and payment integration. Reassign at least one high-priority item." },
-        { title: "No backup for on-call during lead engineer PTO next week", category: "People", severity: "High", confidence: "High", evidence: "Issue #72: lead engineer PTO 2026-08-04–08. On-call rotation has empty slots. Production incidents would escalate to managers only.", recommended_action: "Assign a temporary primary on-call and run a 1-hour handoff walkthrough before PTO." },
-        { title: "New hire blocked waiting for production access (2 weeks)", category: "People", severity: "Medium", confidence: "Medium", evidence: "Issue #64: access request open 14 days. New engineer cannot run integration tests against staging.", recommended_action: "Escalate access ticket to IT security with a same-day SLA for new-hire onboarding." },
-
-        // --- Quality (2) ---
-        { title: "Flaky checkout tests open for 25 days", category: "Quality", severity: "Medium", confidence: "High", evidence: "Issue #38 created 2026-07-05, due 2026-07-15 (missed). 12 comments. Random CI failures slow merges.", recommended_action: "Quarantine flaky tests so they stop blocking PRs. Bug-bash or rewrite unstable assertions." },
-        { title: "Error rate on checkout API spiked 3× in last 48 hours", category: "Quality", severity: "High", confidence: "High", evidence: "Issue #75 opened from monitoring alert. 5xx rate on /checkout from 0.4% to 1.3%. No owner assigned yet.", recommended_action: "Page the backend on-call. Add a canary rollback plan and short-term rate limit if needed." },
-
-        // --- Scope (2) ---
-        { title: "New Black Friday discount engine added without estimate", category: "Scope", severity: "High", confidence: "Medium", evidence: "Issue #51 created 2026-07-27 with label unestimated, no assignee, no acceptance criteria. Marketing wants a full rules engine.", recommended_action: "Run a 30-minute estimation session this week. Decide: in-scope, deferred, or minimal viable version." },
-        { title: "Stakeholder requested multi-currency support mid-sprint", category: "Scope", severity: "Medium", confidence: "Medium", evidence: "Issue #69 opened 2026-07-28. No estimate. Touches pricing, tax, and invoice modules.", recommended_action: "Park behind a discovery spike. Do not pull into current sprint without explicit trade-offs." },
-
-        // --- Communication (1) ---
-        { title: "WIP payment PR open 12 days with little progress or status updates", category: "Communication", severity: "Medium", confidence: "Medium", evidence: "PR #88 opened 2026-07-18, last update 2026-07-28. Labeled wip. Linked to blocked payment workstream. No recent comment from author.", recommended_action: "Convert to draft with clear remaining tasks or close and re-open when unblocked. Post a short status on the related issue." }
+        { title: "Payment gateway blocked for 20+ days — past due date", category: "Blocker", severity: "Critical", confidence: "High", evidence: "Issue #42 labeled blocker + high-priority. Created 2026-07-10, due 2026-07-25 (missed). Waiting on production API keys.", recommended_action: "Escalate to the payment provider today. Ship a sandbox/mock path so frontend and QA are unblocked." },
+        { title: "Third-party KYC vendor SLA breached — identity checks offline", category: "Blocker", severity: "High", confidence: "High", evidence: "Issue #61 open 9 days. Vendor response exceeded 48h SLA. Signup funnel blocked for EU users.", recommended_action: "Invoke contractual escalation. Enable temporary manual KYC path for high-value signups." },
+        { title: "Legal review blocking public beta launch copy", category: "Blocker", severity: "High", confidence: "Medium", evidence: "Issue #67 waiting on Legal for 11 days. Marketing pages cannot go live.", recommended_action: "Book a 30-minute review slot with Legal this week. Prepare a redline version in advance." },
+        { title: "Design system package unpublished — UI work stalled", category: "Blocker", severity: "Medium", confidence: "High", evidence: "Issue #70: design-system npm publish failed. Three feature PRs blocked.", recommended_action: "Hotfix the publish pipeline or pin a local tarball so feature work can continue." },
+        { title: "Database migration for new order schema still open past deadline", category: "Schedule", severity: "High", confidence: "High", evidence: "Issue #29 created 2026-07-01, due 2026-07-20 (missed). Required before new order flow ships.", recommended_action: "Treat as release-blocking. Pair for knowledge transfer. Hard date within 5 business days." },
+        { title: "Mobile release window missed — app store review not started", category: "Schedule", severity: "High", confidence: "High", evidence: "Issue #58 due 2026-07-22 (missed). Store submission checklist incomplete.", recommended_action: "Complete store assets today and submit. Communicate revised launch date." },
+        { title: "Sprint commitments at 140% capacity for two consecutive sprints", category: "Schedule", severity: "Medium", confidence: "Medium", evidence: "Velocity board shows 40% planned vs completed gap. Carry-over growing each sprint.", recommended_action: "Cut lowest-priority items from next sprint. Protect buffer for blockers." },
+        { title: "Critical work concentrated on a single person (bus factor = 1)", category: "People", severity: "Critical", confidence: "High", evidence: "Alice is sole assignee on #29, #42, and #55. She owns PR #88. No secondary owner for order schema.", recommended_action: "Pair Alice this sprint. Document schema and payment integration. Reassign one high-priority item." },
+        { title: "No backup for on-call during lead engineer PTO next week", category: "People", severity: "High", confidence: "High", evidence: "Issue #72: lead engineer PTO 2026-08-04–08. On-call rotation has empty slots.", recommended_action: "Assign temporary primary on-call and run a 1-hour handoff before PTO." },
+        { title: "New hire blocked waiting for production access (2 weeks)", category: "People", severity: "Medium", confidence: "Medium", evidence: "Issue #64: access request open 14 days. Cannot run integration tests on staging.", recommended_action: "Escalate access ticket to IT security with same-day SLA for new-hire onboarding." },
+        { title: "Flaky checkout tests open for 25 days", category: "Quality", severity: "Medium", confidence: "High", evidence: "Issue #38 created 2026-07-05, due 2026-07-15 (missed). Random CI failures slow merges.", recommended_action: "Quarantine flaky tests. Bug-bash or rewrite unstable assertions." },
+        { title: "Error rate on checkout API spiked 3× in last 48 hours", category: "Quality", severity: "High", confidence: "High", evidence: "Issue #75 from monitoring. 5xx on /checkout from 0.4% to 1.3%.", recommended_action: "Page backend on-call. Add canary rollback plan and short-term rate limit if needed." },
+        { title: "New Black Friday discount engine added without estimate", category: "Scope", severity: "High", confidence: "Medium", evidence: "Issue #51 created 2026-07-27, unestimated, no assignee, no acceptance criteria.", recommended_action: "30-minute estimation session this week. Decide: in-scope, deferred, or MVP." },
+        { title: "Stakeholder requested multi-currency support mid-sprint", category: "Scope", severity: "Medium", confidence: "Medium", evidence: "Issue #69 opened 2026-07-28. No estimate. Touches pricing, tax, and invoices.", recommended_action: "Park behind a discovery spike. Do not pull into current sprint without trade-offs." },
+        { title: "WIP payment PR open 12 days with little progress or status updates", category: "Communication", severity: "Medium", confidence: "Medium", evidence: "PR #88 opened 2026-07-18, last update 2026-07-28. Labeled wip. No recent author comment.", recommended_action: "Convert to draft with remaining tasks or close and re-open when unblocked." }
       ],
       positive_signals: [
-        "Most tickets have clear labels (blocker, high-priority, bug, feature)",
+        "Most tickets have clear labels",
         "Frontend work continues on non-blocked items",
         "Monitoring caught the checkout error spike within hours",
-        "Demo data path ensures a useful report even on empty repos"
+        "Demo data ensures a useful report even on empty repos"
       ],
       trend: "increasing",
-      trend_explanation: "Blockers are the largest cluster (4 of 15). Schedule and people risks are compounding them. Without clearing the top blockers this week, release confidence will drop further.",
+      trend_explanation: "Blockers are the largest cluster (4 of 15). Schedule and people risks compound them. Clear top blockers this week or release confidence drops further.",
       next_steps: [
         "Escalate payment + KYC vendor blockers today",
         "Reduce bus-factor on Alice — pair + document",
@@ -302,11 +291,8 @@
       }
     }
 
+    // Always use embedded data (no external JSON overwrite)
     render(sampleData);
-    fetch("./risk_report.json?t=" + Date.now())
-      .then(function(r) { return r.ok ? r.json() : null; })
-      .then(function(data) { if (data && data.risks) render(data); })
-      .catch(function() {});
   </script>
 </body>
 </html>
