@@ -1,0 +1,70 @@
+{
+  "date": "2026-07-30",
+  "overall_risk_level": "High",
+  "summary": "Project is under active delivery pressure. A long-running payment blocker has already missed its deadline, critical knowledge is concentrated on one engineer, and new high-impact scope is entering without estimates. Quality debt (flaky tests) continues to erode CI confidence.",
+  "risks": [
+    {
+      "title": "Critical work concentrated on a single person (bus factor = 1)",
+      "category": "People",
+      "severity": "Critical",
+      "confidence": "High",
+      "evidence": "Alice is the only assignee on #29 (database migration), #42 (payment blocker), and #55 (profile page). She also owns the only open payment-related PR (#88). No secondary owner is documented for the order schema.",
+      "recommended_action": "Pair Alice with another engineer this sprint. Document the database schema and payment integration in a short runbook. Reassign at least one high-priority item."
+    },
+    {
+      "title": "Payment gateway blocked for 20+ days — past due date",
+      "category": "Blocker",
+      "severity": "High",
+      "confidence": "High",
+      "evidence": "Issue #42 labeled blocker + high-priority. Created 2026-07-10, due 2026-07-25 (missed). 8 comments still waiting on production API keys from the provider. Checkout flow cannot ship without it.",
+      "recommended_action": "Escalate to the payment provider account manager today. In parallel, implement a sandbox/mock path so frontend and QA work is unblocked."
+    },
+    {
+      "title": "New Black Friday discount engine added without estimate",
+      "category": "Scope",
+      "severity": "High",
+      "confidence": "Medium",
+      "evidence": "Issue #51 created 2026-07-27 with label unestimated, no assignee, and no acceptance criteria. Marketing wants a completely new rules engine. Risk of late scope creep into the release.",
+      "recommended_action": "Run a 30-minute estimation session this week. Decide: in-scope for current release, deferred, or split into a minimal viable version."
+    },
+    {
+      "title": "Flaky checkout tests open for 25 days",
+      "category": "Quality",
+      "severity": "Medium",
+      "confidence": "High",
+      "evidence": "Issue #38 (flaky tests in checkout suite) created 2026-07-05, due 2026-07-15 (missed). 12 comments. Random CI failures reduce trust in the pipeline and slow merges.",
+      "recommended_action": "Quarantine the flaky tests immediately so they stop blocking PRs. Schedule a focused bug-bash or rewrite the unstable assertions."
+    },
+    {
+      "title": "Database migration for new order schema still open past deadline",
+      "category": "Schedule",
+      "severity": "High",
+      "confidence": "High",
+      "evidence": "Issue #29 labeled backend + high-priority + database. Created 2026-07-01, due 2026-07-20 (missed). 15 comments. Required before the new order flow can ship. Only Alice understands the old schema.",
+      "recommended_action": "Treat as a release-blocking item. Pair for knowledge transfer and set a hard completion date within the next 5 business days."
+    },
+    {
+      "title": "WIP payment PR has been open 12 days with little progress",
+      "category": "Communication",
+      "severity": "Medium",
+      "confidence": "Medium",
+      "evidence": "PR #88 (WIP: Payment provider sandbox integration) opened 2026-07-18, last update 2026-07-28. Labeled wip. Linked to the same blocked payment workstream.",
+      "recommended_action": "Either convert to a draft with clear remaining tasks or close and re-open when unblocked. Post a short status update on the related issue."
+    }
+  ],
+  "positive_signals": [
+    "Team is actively updating issues (several touches in the last few days)",
+    "Most tickets have clear labels (blocker, high-priority, bug, feature)",
+    "Frontend work (#55) is progressing and is not blocked",
+    "Demo data path ensures the radar always produces a useful report even on empty repos"
+  ],
+  "trend": "increasing",
+  "trend_explanation": "Two high-priority items have already missed their due dates, a critical knowledge silo remains, and new unestimated scope is entering. Without intervention this week, release confidence will drop further.",
+  "next_steps": [
+    "Escalate payment provider blocker and create a temporary mock path (today)",
+    "Reduce bus-factor risk on Alice — pair + document schema (this week)",
+    "Estimate or defer the Black Friday discount engine (this week)",
+    "Quarantine flaky checkout tests so CI is trustworthy again",
+    "Set a hard date for the database migration and treat it as release-blocking"
+  ]
+}
