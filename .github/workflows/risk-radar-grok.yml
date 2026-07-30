@@ -1,0 +1,60 @@
+name: AI Project Risk Radar (Grok)
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"   # Every Monday 08:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  risk-radar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install openai
+
+      - name: Collect project data (GitHub)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m src.collectors.github_collector
+
+      - name: Analyze risks with Grok
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          python -m src.analyzers.risk_analyzer_grok
+
+      - name: Publish Risk Report as Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m src.reporters.report_generator
+
+      - name: Copy report JSON into dashboard folder
+        run: |
+          mkdir -p dashboard
+          if [ -f data/risk_report.json ]; then
+            cp data/risk_report.json dashboard/risk_report.json
+          fi
+
+      - name: Commit dashboard data (optional)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dashboard/risk_report.json data/risk_report.md data/risk_report.json || true
+          git diff --staged --quiet || git commit -m "chore: update risk report $(date -u +%Y-%m-%d)"
+          git push || true
