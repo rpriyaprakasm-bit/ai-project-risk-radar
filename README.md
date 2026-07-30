@@ -5,7 +5,7 @@
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Automated-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![Grok](https://img.shields.io/badge/Powered%20by-Grok-000000?logo=x&logoColor=white)](https://x.ai)
 [![Claude](https://img.shields.io/badge/Also%20supports-Claude-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com)
-[![Dashboard](https://img.shields.io/badge/Interactive-Dashboard-38bdf8)](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/dashboard/index.html)
+[![Dashboard](https://img.shields.io/badge/Live-Dashboard-38bdf8)](https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/)
 [![Extensible](https://img.shields.io/badge/Supports-GitHub%20%7C%20Jira%20%7C%20Linear%20%7C%20Notion-blue)](#extending-to-other-tools)
 
 ---
@@ -27,7 +27,7 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 
 1. A clear **Risk Report** (Markdown + GitHub Issue)
 2. Structured **JSON** for automation
-3. An interactive **Risk Dashboard**
+3. An interactive **Risk Dashboard** with graphs by category
 
 ### Risk Categories Detected
 
@@ -44,27 +44,32 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 
 ## Live Dashboard
 
-**GitHub does not run HTML files when you click them in the repo** — it only shows the source code.
+**Permanent URL (GitHub Pages):**  
+**→ https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/**
 
-### View the dashboard right now (click this):
+(If that link is not live yet, complete the one-time setup below.)
 
-**→ [Open Interactive Risk Dashboard](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/dashboard/index.html)**
+### Instant preview (works now)
 
-It shows:
-- Overall risk level with visual gauge
-- Prioritized risk cards (severity, evidence, recommended action)
-- Trend (increasing / stable / decreasing)
+**→ [Open dashboard preview](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/docs/index.html)**
+
+The dashboard shows:
+- Overall risk gauge
+- 6 prioritized risk cards (severity, evidence, action)
+- **Pie chart** — risk distribution by category
+- **Bar chart** — count of risks per category
+- **Horizontal bars** — category breakdown with %
 - Positive signals & next steps
-- Risk breakdown by category
 
-The dashboard loads sample data by default so you can demo it even before the workflow runs.
+### One-time: enable GitHub Pages
 
-### Optional: enable permanent GitHub Pages
-1. Repo → **Settings → Pages**
-2. Source: **Deploy from a branch**
-3. Branch: `main` / folder: `/dashboard`
-4. Save — then your dashboard will be at  
-   `https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`
+1. Open **Settings → Pages**
+2. Under **Build and deployment → Source**, choose **GitHub Actions**
+3. Save
+4. Go to **Actions → Deploy Dashboard to GitHub Pages → Run workflow** (or wait for the next push)
+
+After ~1–2 minutes the permanent URL will work:
+`https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`
 
 ---
 
@@ -80,7 +85,7 @@ The dashboard loads sample data by default so you can demo it even before the wo
 └──────────┬──────────┘
            ▼
 ┌─────────────────────┐
-│  Report + Dashboard │  ← Markdown Issue + HTML Dashboard + JSON
+│  Report + Dashboard │  ← Markdown Issue + HTML Dashboard + JSON + Graphs
 └─────────────────────┘
 ```
 
@@ -110,19 +115,18 @@ Add `ANTHROPIC_API_KEY` and run **AI Project Risk Radar (Claude)**.
 ai-project-risk-radar/
 ├── .github/workflows/
 │   ├── risk-radar.yml              # Claude version
-│   └── risk-radar-grok.yml         # Grok version (recommended)
+│   ├── risk-radar-grok.yml         # Grok version (recommended)
+│   └── pages.yml                   # Deploy dashboard to GitHub Pages
 ├── src/
-│   ├── collectors/                 # Modular data sources
+│   ├── collectors/
 │   ├── analyzers/
-│   │   ├── risk_analyzer.py        # Claude
-│   │   └── risk_analyzer_grok.py   # Grok (xAI)
 │   └── reporters/
-├── dashboard/
-│   ├── index.html                  # Interactive Risk Dashboard
-│   └── risk_report.json            # Live / sample data
+├── docs/                           # Published by GitHub Pages
+│   ├── index.html                  # Live dashboard + category graphs
+│   └── risk_report.json
+├── dashboard/                      # Source copy of dashboard
 ├── prompts/
 ├── examples/
-├── docs/
 └── README.md
 ```
 
@@ -139,9 +143,9 @@ See [docs/extending.md](docs/extending.md). The collector interface is the same 
 - Agentic AI system design (Grok + Claude)
 - Structured output for dashboards
 - Modular, extensible architecture
-- GitHub Actions automation
+- GitHub Actions automation + GitHub Pages
 - Real-world Project Management problem solving
-- Data visualization (interactive dashboard)
+- Data visualization (pie, bar, horizontal category graphs)
 
 ---
 
