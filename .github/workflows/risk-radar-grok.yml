@@ -10,15 +10,19 @@ permissions:
   issues: write
   pull-requests: read
 
+env:
+  # Use Node 24 for JavaScript actions (removes deprecation warning)
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   risk-radar:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
