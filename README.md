@@ -10,6 +10,14 @@
 
 ---
 
+## Dashboard Snapshot
+
+![AI Project Risk Radar Dashboard](docs/dashboard-preview.svg)
+
+**Live dashboard:** [Open interactive version](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
+
+---
+
 ## The Real Problem
 
 Most projects don’t fail because of one big disaster.  
@@ -44,21 +52,20 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 
 ## Live Dashboard
 
+**Interactive preview (works now):**  
+**→ [Open dashboard](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)**
+
 **Permanent URL (GitHub Pages):**  
 **→ https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/**
 
-(If that link is not live yet, complete the one-time setup below.)
-
-### Instant preview (works now)
-
-**→ [Open dashboard preview](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/docs/index.html)**
+(If Pages is not live yet, complete the one-time setup below.)
 
 The dashboard shows:
+- Category tiles (Blocker, Schedule, People, Quality, Scope, Communication)
+- Pie chart — risk distribution by category
+- Bar chart — count of risks per category
 - Overall risk gauge
-- 6 prioritized risk cards (severity, evidence, action)
-- **Pie chart** — risk distribution by category
-- **Bar chart** — count of risks per category
-- **Horizontal bars** — category breakdown with %
+- Prioritized risk cards (severity, evidence, action)
 - Positive signals & next steps
 
 ### One-time: enable GitHub Pages
@@ -66,10 +73,9 @@ The dashboard shows:
 1. Open **Settings → Pages**
 2. Under **Build and deployment → Source**, choose **GitHub Actions**
 3. Save
-4. Go to **Actions → Deploy Dashboard to GitHub Pages → Run workflow** (or wait for the next push)
+4. Go to **Actions → Deploy Dashboard to GitHub Pages → Run workflow**
 
-After ~1–2 minutes the permanent URL will work:
-`https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`
+After ~1–2 minutes the permanent URL will work.
 
 ---
 
@@ -121,10 +127,11 @@ ai-project-risk-radar/
 │   ├── collectors/
 │   ├── analyzers/
 │   └── reporters/
-├── docs/                           # Published by GitHub Pages
+├── docs/
 │   ├── index.html                  # Live dashboard + category graphs
+│   ├── dashboard-preview.svg       # Snapshot for README
 │   └── risk_report.json
-├── dashboard/                      # Source copy of dashboard
+├── dashboard/
 ├── prompts/
 ├── examples/
 └── README.md
@@ -145,7 +152,7 @@ See [docs/extending.md](docs/extending.md). The collector interface is the same 
 - Modular, extensible architecture
 - GitHub Actions automation + GitHub Pages
 - Real-world Project Management problem solving
-- Data visualization (pie, bar, horizontal category graphs)
+- Data visualization (pie, bar, category tiles)
 
 ---
 
