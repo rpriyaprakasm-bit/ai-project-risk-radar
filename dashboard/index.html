@@ -33,14 +33,8 @@
         <h2 class="text-sm uppercase tracking-wider text-slate-400 mb-2">Summary</h2>
         <p id="summary" class="text-lg text-slate-100 leading-relaxed"></p>
         <div class="mt-4 flex flex-wrap gap-4 text-sm">
-          <div>
-            <span class="text-slate-500">Trend</span>
-            <span id="trend" class="ml-2 font-medium"></span>
-          </div>
-          <div>
-            <span class="text-slate-500">Explanation</span>
-            <span id="trend-explanation" class="ml-2 text-slate-300"></span>
-          </div>
+          <div><span class="text-slate-500">Trend</span> <span id="trend" class="ml-2 font-medium"></span></div>
+          <div><span class="text-slate-500">Explanation</span> <span id="trend-explanation" class="ml-2 text-slate-300"></span></div>
         </div>
       </div>
       <div class="glass rounded-2xl p-6 flex flex-col items-center justify-center">
@@ -79,158 +73,169 @@
   </div>
 
   <script>
+    // Rich embedded data — always available (no fetch required)
     const sampleData = {
-      "date": "2026-07-30",
-      "overall_risk_level": "High",
-      "summary": "The project has several concentrated risks around a single engineer and a long-running blocker that is already past its due date. Scope is also expanding without estimates.",
-      "risks": [
+      date: "2026-07-30",
+      overall_risk_level: "High",
+      summary: "Project is under active delivery pressure. A long-running payment blocker has already missed its deadline, critical knowledge is concentrated on one engineer, and new high-impact scope is entering without estimates. Quality debt (flaky tests) continues to erode CI confidence.",
+      risks: [
         {
-          "title": "Critical work is concentrated on a single person",
-          "category": "People",
-          "severity": "High",
-          "confidence": "High",
-          "evidence": "Alice is the only assignee on #29 (critical database migration), #42 (payment blocker), and #55.",
-          "recommended_action": "Immediately pair or reassign at least one of the high-priority items. Document the database schema knowledge."
+          title: "Critical work concentrated on a single person (bus factor = 1)",
+          category: "People",
+          severity: "Critical",
+          confidence: "High",
+          evidence: "Alice is the only assignee on #29 (database migration), #42 (payment blocker), and #55 (profile page). She also owns the only open payment-related PR (#88). No secondary owner is documented for the order schema.",
+          recommended_action: "Pair Alice with another engineer this sprint. Document the database schema and payment integration in a short runbook. Reassign at least one high-priority item."
         },
         {
-          "title": "Payment integration blocked for more than 2 weeks",
-          "category": "Blocker",
-          "severity": "High",
-          "confidence": "High",
-          "evidence": "Issue #42 has label blocker, was created 20 days ago, due date was 2026-07-25 (already missed).",
-          "recommended_action": "Escalate to the payment provider or prepare a temporary mock/fallback path."
+          title: "Payment gateway blocked for 20+ days — past due date",
+          category: "Blocker",
+          severity: "High",
+          confidence: "High",
+          evidence: "Issue #42 labeled blocker + high-priority. Created 2026-07-10, due 2026-07-25 (missed). 8 comments still waiting on production API keys. Checkout flow cannot ship without it.",
+          recommended_action: "Escalate to the payment provider account manager today. In parallel, implement a sandbox/mock path so frontend and QA work is unblocked."
         },
         {
-          "title": "New high-impact feature added without estimate",
-          "category": "Scope",
-          "severity": "Medium",
-          "confidence": "Medium",
-          "evidence": "Issue #51 created 3 days ago with label unestimated and no assignee.",
-          "recommended_action": "Run a quick estimation session and decide whether this belongs in the current release."
+          title: "New Black Friday discount engine added without estimate",
+          category: "Scope",
+          severity: "High",
+          confidence: "Medium",
+          evidence: "Issue #51 created 2026-07-27 with label unestimated, no assignee, and no acceptance criteria. Marketing wants a completely new rules engine.",
+          recommended_action: "Run a 30-minute estimation session this week. Decide: in-scope for current release, deferred, or split into a minimal viable version."
         },
         {
-          "title": "Long-lived quality issue",
-          "category": "Quality",
-          "severity": "Medium",
-          "confidence": "Medium",
-          "evidence": "Issue #38 (flaky checkout tests) open for 25 days and past due date.",
-          "recommended_action": "Schedule a focused bug-bash or quarantine the flaky tests."
+          title: "Flaky checkout tests open for 25 days",
+          category: "Quality",
+          severity: "Medium",
+          confidence: "High",
+          evidence: "Issue #38 created 2026-07-05, due 2026-07-15 (missed). 12 comments. Random CI failures reduce trust in the pipeline and slow merges.",
+          recommended_action: "Quarantine the flaky tests immediately so they stop blocking PRs. Schedule a focused bug-bash or rewrite the unstable assertions."
+        },
+        {
+          title: "Database migration for new order schema still open past deadline",
+          category: "Schedule",
+          severity: "High",
+          confidence: "High",
+          evidence: "Issue #29 labeled backend + high-priority + database. Created 2026-07-01, due 2026-07-20 (missed). 15 comments. Required before the new order flow can ship.",
+          recommended_action: "Treat as a release-blocking item. Pair for knowledge transfer and set a hard completion date within the next 5 business days."
+        },
+        {
+          title: "WIP payment PR has been open 12 days with little progress",
+          category: "Communication",
+          severity: "Medium",
+          confidence: "Medium",
+          evidence: "PR #88 (WIP: Payment provider sandbox integration) opened 2026-07-18, last update 2026-07-28. Labeled wip. Linked to the blocked payment workstream.",
+          recommended_action: "Convert to a draft with clear remaining tasks or close and re-open when unblocked. Post a short status update on the related issue."
         }
       ],
-      "positive_signals": [
-        "Active recent work on several issues",
-        "Most issues have clear labels"
+      positive_signals: [
+        "Team is actively updating issues (several touches in the last few days)",
+        "Most tickets have clear labels (blocker, high-priority, bug, feature)",
+        "Frontend work (#55) is progressing and is not blocked",
+        "Demo data ensures the radar always produces a useful report even on empty repos"
       ],
-      "trend": "increasing",
-      "trend_explanation": "A critical blocker has already missed its deadline and key knowledge remains siloed.",
-      "next_steps": [
-        "Unblock or escalate the payment gateway issue this week",
-        "Reduce bus-factor risk on Alice’s critical tasks",
-        "Estimate and prioritize (or defer) the new discount engine request"
+      trend: "increasing",
+      trend_explanation: "Two high-priority items have already missed their due dates, a critical knowledge silo remains, and new unestimated scope is entering. Without intervention this week, release confidence will drop further.",
+      next_steps: [
+        "Escalate payment provider blocker and create a temporary mock path (today)",
+        "Reduce bus-factor risk on Alice — pair + document schema (this week)",
+        "Estimate or defer the Black Friday discount engine (this week)",
+        "Quarantine flaky checkout tests so CI is trustworthy again",
+        "Set a hard date for the database migration and treat it as release-blocking"
       ]
     };
 
     function severityColor(level) {
-      const map = { Critical: "#dc2626", High: "#ea580c", Medium: "#ca8a04", Low: "#16a34a" };
-      return map[level] || "#64748b";
+      return { Critical: "#dc2626", High: "#ea580c", Medium: "#ca8a04", Low: "#16a34a" }[level] || "#64748b";
     }
-
     function severityScore(level) {
       return { Critical: 95, High: 75, Medium: 45, Low: 20 }[level] || 30;
     }
 
     function render(data) {
-      document.getElementById("report-date").textContent = data.date || "";
-      const badge = document.getElementById("overall-badge");
-      badge.textContent = data.overall_risk_level;
-      badge.className = "px-4 py-1.5 rounded-full text-sm font-semibold text-white badge-" + (data.overall_risk_level || "medium").toLowerCase();
-
-      document.getElementById("summary").textContent = data.summary || "";
-      const trendEl = document.getElementById("trend");
-      trendEl.textContent = (data.trend || "stable").toUpperCase();
-      trendEl.className = "ml-2 font-medium " + (
-        data.trend === "increasing" ? "text-red-400" :
-        data.trend === "decreasing" ? "text-emerald-400" : "text-slate-300"
-      );
-      document.getElementById("trend-explanation").textContent = data.trend_explanation || "";
-
-      const score = severityScore(data.overall_risk_level);
-      document.getElementById("gauge-label").textContent = data.overall_risk_level;
-      new Chart(document.getElementById("riskGauge"), {
-        type: "doughnut",
-        data: {
-          datasets: [{
-            data: [score, 100 - score],
-            backgroundColor: [severityColor(data.overall_risk_level), "#1e293b"],
-            borderWidth: 0,
-            cutout: "75%"
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } }
-        }
-      });
-
-      const container = document.getElementById("risks-container");
-      container.innerHTML = "";
-      (data.risks || []).forEach((r, i) => {
-        const card = document.createElement("div");
-        card.className = "glass rounded-xl p-5 border-l-4";
-        card.style.borderLeftColor = severityColor(r.severity);
-        card.innerHTML = `
-          <div class="flex items-start justify-between gap-3 mb-2">
-            <h3 class="font-semibold text-white">${i + 1}. ${r.title}</h3>
-            <span class="shrink-0 px-2 py-0.5 rounded text-xs font-medium text-white badge-${(r.severity || "").toLowerCase()}">${r.severity}</span>
-          </div>
-          <div class="flex gap-3 text-xs text-slate-400 mb-3">
-            <span>${r.category}</span><span>·</span><span>Confidence: ${r.confidence}</span>
-          </div>
-          <p class="text-sm text-slate-300 mb-3"><strong class="text-slate-400">Evidence:</strong> ${r.evidence}</p>
-          <p class="text-sm text-sky-300"><strong class="text-slate-400">Action:</strong> ${r.recommended_action}</p>
-        `;
-        container.appendChild(card);
-      });
-
-      const pos = document.getElementById("positive-list");
-      pos.innerHTML = (data.positive_signals || []).map(s => `<li class="flex gap-2"><span class="text-emerald-500">✓</span> ${s}</li>`).join("") || "<li class='text-slate-500'>None noted</li>";
-      const next = document.getElementById("next-steps");
-      next.innerHTML = (data.next_steps || []).map(s => `<li>${s}</li>`).join("") || "<li class='text-slate-500'>None</li>";
-
-      const cats = {};
-      (data.risks || []).forEach(r => { cats[r.category] = (cats[r.category] || 0) + 1; });
-      new Chart(document.getElementById("categoryChart"), {
-        type: "bar",
-        data: {
-          labels: Object.keys(cats),
-          datasets: [{
-            label: "Number of risks",
-            data: Object.values(cats),
-            backgroundColor: "#38bdf8",
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { ticks: { color: "#94a3b8" }, grid: { color: "#1e293b" } },
-            y: { ticks: { color: "#94a3b8", stepSize: 1 }, grid: { color: "#1e293b" }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    async function load() {
       try {
-        const res = await fetch("./risk_report.json?t=" + Date.now());
-        if (res.ok) { render(await res.json()); return; }
-      } catch (e) {}
-      render(sampleData);
+        document.getElementById("report-date").textContent = data.date || "";
+        const badge = document.getElementById("overall-badge");
+        badge.textContent = data.overall_risk_level;
+        badge.className = "px-4 py-1.5 rounded-full text-sm font-semibold text-white badge-" + (data.overall_risk_level || "medium").toLowerCase();
+
+        document.getElementById("summary").textContent = data.summary || "";
+        const trendEl = document.getElementById("trend");
+        trendEl.textContent = (data.trend || "stable").toUpperCase();
+        trendEl.className = "ml-2 font-medium " + (data.trend === "increasing" ? "text-red-400" : data.trend === "decreasing" ? "text-emerald-400" : "text-slate-300");
+        document.getElementById("trend-explanation").textContent = data.trend_explanation || "";
+        document.getElementById("gauge-label").textContent = data.overall_risk_level || "";
+
+        // Risk cards FIRST (always render even if charts fail)
+        const container = document.getElementById("risks-container");
+        container.innerHTML = "";
+        (data.risks || []).forEach(function(r, i) {
+          const card = document.createElement("div");
+          card.className = "glass rounded-xl p-5 border-l-4";
+          card.style.borderLeftColor = severityColor(r.severity);
+          card.innerHTML =
+            '<div class="flex items-start justify-between gap-3 mb-2">' +
+              '<h3 class="font-semibold text-white">' + (i + 1) + '. ' + r.title + '</h3>' +
+              '<span class="shrink-0 px-2 py-0.5 rounded text-xs font-medium text-white badge-' + (r.severity || '').toLowerCase() + '">' + r.severity + '</span>' +
+            '</div>' +
+            '<div class="flex gap-3 text-xs text-slate-400 mb-3">' +
+              '<span>' + r.category + '</span><span>·</span><span>Confidence: ' + r.confidence + '</span>' +
+            '</div>' +
+            '<p class="text-sm text-slate-300 mb-3"><strong class="text-slate-400">Evidence:</strong> ' + r.evidence + '</p>' +
+            '<p class="text-sm text-sky-300"><strong class="text-slate-400">Action:</strong> ' + r.recommended_action + '</p>';
+          container.appendChild(card);
+        });
+
+        document.getElementById("positive-list").innerHTML =
+          (data.positive_signals || []).map(function(s) {
+            return '<li class="flex gap-2"><span class="text-emerald-500">✓</span> ' + s + '</li>';
+          }).join("") || "<li class='text-slate-500'>None noted</li>";
+
+        document.getElementById("next-steps").innerHTML =
+          (data.next_steps || []).map(function(s) {
+            return '<li>' + s + '</li>';
+          }).join("") || "<li class='text-slate-500'>None</li>";
+
+        // Charts last — safe if Chart.js missing
+        if (typeof Chart !== "undefined") {
+          try {
+            var score = severityScore(data.overall_risk_level);
+            new Chart(document.getElementById("riskGauge"), {
+              type: "doughnut",
+              data: { datasets: [{ data: [score, 100 - score], backgroundColor: [severityColor(data.overall_risk_level), "#1e293b"], borderWidth: 0, cutout: "75%" }] },
+              options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            });
+          } catch (e) {}
+
+          try {
+            var cats = {};
+            (data.risks || []).forEach(function(r) { cats[r.category] = (cats[r.category] || 0) + 1; });
+            new Chart(document.getElementById("categoryChart"), {
+              type: "bar",
+              data: { labels: Object.keys(cats), datasets: [{ label: "Number of risks", data: Object.values(cats), backgroundColor: "#38bdf8", borderRadius: 6 }] },
+              options: {
+                responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                scales: {
+                  x: { ticks: { color: "#94a3b8" }, grid: { color: "#1e293b" } },
+                  y: { ticks: { color: "#94a3b8", stepSize: 1 }, grid: { color: "#1e293b" }, beginAtZero: true }
+                }
+              }
+            });
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.error("Render error", err);
+      }
     }
-    load();
+
+    // Always render embedded data immediately
+    render(sampleData);
+
+    // Optionally try to load fresher JSON (won't break if it fails)
+    fetch("./risk_report.json?t=" + Date.now())
+      .then(function(r) { return r.ok ? r.json() : null; })
+      .then(function(data) { if (data && data.risks) render(data); })
+      .catch(function() {});
   </script>
 </body>
 </html>
