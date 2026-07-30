@@ -1,165 +1,127 @@
 # AI Project Risk Radar
 
-> An intelligent early-warning system that automatically detects project risks before they become expensive problems.
+I got tired of finding out about project problems *after* they already cost a sprint.
+
+Blockers sitting quiet for two weeks. One person owning three critical tickets. New scope landing with no estimate. Nobody was “ignoring” risk — there was just too much noise to scan every day.
+
+So I built a small system that reads GitHub issues/PRs on a schedule, asks an LLM what’s actually worrying, and dumps the result into a dashboard I can open in 10 seconds.
+
+Not a full PM platform. Just an early-warning layer.
 
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Automated-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![Grok](https://img.shields.io/badge/Powered%20by-Grok-000000?logo=x&logoColor=white)](https://x.ai)
-[![Claude](https://img.shields.io/badge/Also%20supports-Claude-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com)
-[![Dashboard](https://img.shields.io/badge/Live-Dashboard-38bdf8)](https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/)
-[![Extensible](https://img.shields.io/badge/Supports-GitHub%20%7C%20Jira%20%7C%20Linear%20%7C%20Notion-blue)](#extending-to-other-tools)
+[![Dashboard](https://img.shields.io/badge/Live-Dashboard-38bdf8)](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
 
 ---
 
-## Dashboard Snapshot
+## Dashboard (what it looks like)
 
-![AI Project Risk Radar Dashboard](docs/dashboard-preview.svg)
+![Dashboard snapshot](docs/dashboard-preview.svg)
 
-**Live dashboard:** [Open interactive version](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
+**Open the live version:**  
+→ [Interactive dashboard](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
 
----
-
-## The Real Problem
-
-Most projects don’t fail because of one big disaster.  
-They fail because small risks slowly accumulate and nobody notices early enough.
-
-Project managers spend hours every week manually scanning tickets, comments, and schedules looking for trouble. By the time a risk becomes obvious, it is usually already costly.
-
-**This tool solves that.**
+(GitHub Pages permanent URL once enabled: `https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`)
 
 ---
 
-## What It Does
+## What it actually does
 
-The **AI Project Risk Radar** automatically analyzes your project data and produces:
+1. Collects open issues + PRs from GitHub (falls back to demo data if the repo is empty — useful for portfolio demos)
+2. Sends a structured prompt to **Grok** (or Claude if you prefer)
+3. Writes:
+   - a Risk Report as a GitHub Issue
+   - `risk_report.json`
+   - an HTML dashboard with category tiles, pie, bars, and action cards
 
-1. A clear **Risk Report** (Markdown + GitHub Issue)
-2. Structured **JSON** for automation
-3. An interactive **Risk Dashboard** with graphs by category
+### Categories it looks for
 
-### Risk Categories Detected
+| Category | Rough idea |
+|----------|------------|
+| Blocker | Stuck work, external dependencies, “waiting on…” |
+| Schedule | Missed due dates, overloaded sprints |
+| People | Bus factor, missing coverage, access delays |
+| Quality | Flaky tests, error spikes |
+| Scope | Unestimated or late-arriving work |
+| Communication | Silent PRs / stale updates |
 
-| Category | What it looks for |
-|----------|-------------------|
-| **Schedule Risk** | Overdue tasks, slipping deadlines |
-| **Blocker Risk** | Growing number of blocked items |
-| **Scope Risk** | Sudden increase in unestimated work |
-| **People Risk** | Critical work concentrated on too few people |
-| **Quality Risk** | Rising bugs or failing checks |
-| **Communication Risk** | Important tickets going silent |
-
----
-
-## Live Dashboard
-
-**Interactive preview (works now):**  
-**→ [Open dashboard](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)**
-
-**Permanent URL (GitHub Pages):**  
-**→ https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/**
-
-(If Pages is not live yet, complete the one-time setup below.)
-
-The dashboard shows:
-- Category tiles (Blocker, Schedule, People, Quality, Scope, Communication)
-- Pie chart — risk distribution by category
-- Bar chart — count of risks per category
-- Overall risk gauge
-- Prioritized risk cards (severity, evidence, action)
-- Positive signals & next steps
-
-### One-time: enable GitHub Pages
-
-1. Open **Settings → Pages**
-2. Under **Build and deployment → Source**, choose **GitHub Actions**
-3. Save
-4. Go to **Actions → Deploy Dashboard to GitHub Pages → Run workflow**
-
-After ~1–2 minutes the permanent URL will work.
+I tried a pure **severity** view (Critical / High / Medium / Low) first. It was accurate but harder to act on in a standup. Category view won — PMs ask “what kind of problem?” before “how red is it?”
 
 ---
 
-## Architecture
+## How to run it
 
-```
-┌─────────────────────┐
-│  Data Collectors    │  ← GitHub (ready) | Jira / Linear / Notion (easy to add)
-└──────────┬──────────┘
-           ▼
-┌─────────────────────┐
-│  Risk Analyzer      │  ← Grok (xAI) or Claude
-└──────────┬──────────┘
-           ▼
-┌─────────────────────┐
-│  Report + Dashboard │  ← Markdown Issue + HTML Dashboard + JSON + Graphs
-└─────────────────────┘
-```
+### Grok (default)
 
----
+1. Repo **Settings → Secrets → Actions**
+2. Add `XAI_API_KEY` from [console.x.ai](https://console.x.ai)  
+   *(needs credits — empty balance returns 403)*
+3. **Actions → AI Project Risk Radar (Grok) → Run workflow**
 
-## Quick Start (Grok version — recommended)
+### Claude (optional)
 
-1. Go to **Settings → Secrets and variables → Actions**
-2. Add secret: `XAI_API_KEY` (get one at [console.x.ai](https://console.x.ai) — **add credits** or the API will return 403)
-3. Go to the **Actions** tab → **AI Project Risk Radar (Grok)** → **Run workflow**
+Same flow with `ANTHROPIC_API_KEY` and the Claude workflow.
 
-That’s it. The workflow will:
-- Collect GitHub issues/PRs (or use demo data if the repo is empty)
-- Analyze risks with Grok
-- Post a Risk Report as a GitHub Issue
-- Update the dashboard data
+### GitHub Pages (one-time)
 
-### Claude version (optional)
-
-Add `ANTHROPIC_API_KEY` and run **AI Project Risk Radar (Claude)**.
+1. **Settings → Pages → Source → GitHub Actions**
+2. Run the **Deploy Dashboard** workflow (or push again)
 
 ---
 
-## Project Structure
+## What’s real vs demo
+
+Right now the dashboard ships with **rich demo risks** so the graphs aren’t empty on a fresh fork. When the collector finds real issues, those replace the sample set.
+
+If you fork this and only see demo data: that’s expected until the workflow runs against a repo with actual tickets.
+
+---
+
+## Limitations (honest)
+
+- **GitHub only** for data today. Jira / Linear / Notion are stubs — same collector interface, not wired up yet.
+- **LLM judgment isn’t perfect.** It can over-rank noisy tickets or miss context that only exists in Slack.
+- **Needs API credits.** Without an `XAI_API_KEY` balance the Grok workflow fails hard.
+- **Dashboard is static HTML** after each run. No live websocket; refresh after the Action finishes.
+- **Pages setup is still manual** (GitHub requires you to click Source = Actions once).
+- I haven’t battle-tested this on a 500-issue monorepo. It was built for small–medium project boards.
+
+More detail: [LIMITATIONS.md](LIMITATIONS.md)
+
+---
+
+## Still on my list
+
+- [ ] Wire a real Jira collector (even read-only)
+- [ ] Filter “noise” labels so chores don’t look like blockers
+- [ ] Weekly trend line (risk count over the last N runs)
+- [ ] Slack/email ping when overall risk jumps to Critical
+- [ ] Tighten the prompt so evidence quotes issue numbers more consistently
+
+---
+
+## Layout of the repo
 
 ```text
-ai-project-risk-radar/
-├── .github/workflows/
-│   ├── risk-radar.yml              # Claude version
-│   ├── risk-radar-grok.yml         # Grok version (recommended)
-│   └── pages.yml                   # Deploy dashboard to GitHub Pages
-├── src/
-│   ├── collectors/
-│   ├── analyzers/
-│   └── reporters/
-├── docs/
-│   ├── index.html                  # Live dashboard + category graphs
-│   ├── dashboard-preview.svg       # Snapshot for README
-│   └── risk_report.json
-├── dashboard/
-├── prompts/
-├── examples/
-└── README.md
+.github/workflows/     Grok + Claude + Pages deploy
+src/collectors/        GitHub first; others stubbed
+src/analyzers/         Grok / Claude prompts + parsing
+src/reporters/         Issue + JSON writers
+docs/                  Dashboard + snapshot + sample JSON
+prompts/               Prompt templates I iterate on
 ```
 
 ---
 
-## Extending to Jira / Linear / Notion
+## About AI use on this project
 
-See [docs/extending.md](docs/extending.md). The collector interface is the same — only the data source changes.
+I used Grok heavily for scaffolding the dashboard HTML, workflow YAML, and first-pass analyzer code.  
+**I chose the problem, the category model, the demo scenarios, and when to throw away the severity-first UI.**
 
----
-
-## Skills Demonstrated
-
-- Agentic AI system design (Grok + Claude)
-- Structured output for dashboards
-- Modular, extensible architecture
-- GitHub Actions automation + GitHub Pages
-- Real-world Project Management problem solving
-- Data visualization (pie, bar, category tiles)
+If you’re reviewing this as a portfolio piece: ask me why blockers sit above scope, or how I’d plug in Linear — that’s the part that isn’t generated.
 
 ---
 
 ## License
 
-MIT
-
----
-
-**Built to show that AI can do more than generate text — it can actively protect projects.**
+MIT — use it, break it, improve it.
