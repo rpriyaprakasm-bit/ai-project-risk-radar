@@ -3,7 +3,9 @@
 > An intelligent early-warning system that automatically detects project risks before they become expensive problems.
 
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Automated-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
-[![Claude](https://img.shields.io/badge/Powered%20by-Claude-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com)
+[![Grok](https://img.shields.io/badge/Powered%20by-Grok-000000?logo=x&logoColor=white)](https://x.ai)
+[![Claude](https://img.shields.io/badge/Also%20supports-Claude-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com)
+[![Dashboard](https://img.shields.io/badge/Interactive-Dashboard-38bdf8)](./dashboard/index.html)
 [![Extensible](https://img.shields.io/badge/Supports-GitHub%20%7C%20Jira%20%7C%20Linear%20%7C%20Notion-blue)](#extending-to-other-tools)
 
 ---
@@ -21,13 +23,11 @@ Project managers spend hours every week manually scanning tickets, comments, and
 
 ## What It Does
 
-The **AI Project Risk Radar** automatically analyzes your project data and produces a clear, prioritized Risk Report that includes:
+The **AI Project Risk Radar** automatically analyzes your project data and produces:
 
-- Overall Risk Level (Low / Medium / High / Critical)
-- Prioritized list of detected risks
-- Evidence for each risk
-- Recommended actions
-- Trend indicators
+1. A clear **Risk Report** (Markdown + GitHub Issue)
+2. Structured **JSON** for automation
+3. An interactive **Risk Dashboard**
 
 ### Risk Categories Detected
 
@@ -42,7 +42,24 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 
 ---
 
-## Architecture (Designed for Extensibility)
+## Live Dashboard
+
+Open the interactive dashboard:
+
+**→ [dashboard/index.html](./dashboard/index.html)**
+
+It shows:
+- Overall risk level with visual gauge
+- Prioritized risk cards (severity, evidence, recommended action)
+- Trend (increasing / stable / decreasing)
+- Positive signals & next steps
+- Risk breakdown by category
+
+The dashboard loads `risk_report.json` when available and falls back to sample data for demos.
+
+---
+
+## Architecture
 
 ```
 ┌─────────────────────┐
@@ -50,32 +67,31 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 └──────────┬──────────┘
            ▼
 ┌─────────────────────┐
-│  Risk Analyzer      │  ← Claude (structured risk analysis)
+│  Risk Analyzer      │  ← Grok (xAI) or Claude
 └──────────┬──────────┘
            ▼
 ┌─────────────────────┐
-│  Report Generator   │  ← Markdown + GitHub Issue
+│  Report + Dashboard │  ← Markdown Issue + HTML Dashboard + JSON
 └─────────────────────┘
 ```
 
-The collector layer is modular. You can add new tools without rewriting the core logic.
-
 ---
 
-## Quick Start
+## Quick Start (Grok version — recommended)
 
-1. **Fork or clone** this repository
-2. Add your `ANTHROPIC_API_KEY` as a GitHub Actions secret
-3. (Optional) Adjust the schedule in `.github/workflows/risk-radar.yml`
-4. The workflow will run automatically and post a Risk Report as a GitHub Issue
+1. Go to **Settings → Secrets and variables → Actions**
+2. Add secret: `XAI_API_KEY` (get one at [console.x.ai](https://console.x.ai))
+3. Go to the **Actions** tab → **AI Project Risk Radar (Grok)** → **Run workflow**
 
-> You can also trigger it manually from the Actions tab.
+That’s it. The workflow will:
+- Collect GitHub issues/PRs (or use demo data)
+- Analyze risks with Grok
+- Post a Risk Report as a GitHub Issue
+- Update the dashboard data
 
----
+### Claude version (optional)
 
-## Example Output
-
-See [`examples/sample-risk-report.md`](examples/sample-risk-report.md) for a realistic example of what the radar produces.
+You can still use the original Claude workflow. Add `ANTHROPIC_API_KEY` and run the older workflow file if present.
 
 ---
 
@@ -84,50 +100,39 @@ See [`examples/sample-risk-report.md`](examples/sample-risk-report.md) for a rea
 ```text
 ai-project-risk-radar/
 ├── .github/workflows/
-│   └── risk-radar.yml          # Scheduled + manual trigger
+│   ├── risk-radar.yml              # Claude version
+│   └── risk-radar-grok.yml         # Grok version (recommended)
 ├── src/
-│   ├── collectors/             # Data sources (modular)
-│   │   ├── github_collector.py
-│   │   ├── base.py
-│   │   └── stubs/              # Ready for Jira, Linear, Notion
+│   ├── collectors/                 # Modular data sources
 │   ├── analyzers/
-│   │   └── risk_analyzer.py    # Claude-powered analysis
+│   │   ├── risk_analyzer.py        # Claude
+│   │   └── risk_analyzer_grok.py   # Grok (xAI)
 │   └── reporters/
-│       └── report_generator.py
+├── dashboard/
+│   ├── index.html                  # Interactive Risk Dashboard
+│   └── risk_report.json            # Live / sample data
 ├── prompts/
-│   └── risk_analysis.md        # High-quality system prompt
 ├── examples/
-│   └── sample-risk-report.md
 ├── docs/
-│   ├── architecture.md
-│   └── extending.md            # How to add Jira / Linear / Notion
 └── README.md
 ```
 
 ---
 
-## Extending to Other Tools
+## Extending to Jira / Linear / Notion
 
-The system is deliberately modular.
-
-To add **Jira**, **Linear**, or **Notion**:
-
-1. Create a new collector in `src/collectors/` that implements the same interface
-2. Return data in the standard format (see `docs/extending.md`)
-3. Register it in the workflow
-
-No changes needed to the Risk Analyzer or Report Generator.
+See [docs/extending.md](docs/extending.md). The collector interface is the same — only the data source changes.
 
 ---
 
 ## Skills Demonstrated
 
-- Agentic AI system design
-- Structured output & prompt engineering
-- Modular software architecture
+- Agentic AI system design (Grok + Claude)
+- Structured output for dashboards
+- Modular, extensible architecture
 - GitHub Actions automation
-- Real-world problem solving in Project Management
-- Extensibility and clean interfaces
+- Real-world Project Management problem solving
+- Data visualization (interactive dashboard)
 
 ---
 
