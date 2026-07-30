@@ -5,7 +5,7 @@
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Automated-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![Grok](https://img.shields.io/badge/Powered%20by-Grok-000000?logo=x&logoColor=white)](https://x.ai)
 [![Claude](https://img.shields.io/badge/Also%20supports-Claude-D97757?logo=anthropic&logoColor=white)](https://www.anthropic.com)
-[![Dashboard](https://img.shields.io/badge/Interactive-Dashboard-38bdf8)](./dashboard/index.html)
+[![Dashboard](https://img.shields.io/badge/Interactive-Dashboard-38bdf8)](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/dashboard/index.html)
 [![Extensible](https://img.shields.io/badge/Supports-GitHub%20%7C%20Jira%20%7C%20Linear%20%7C%20Notion-blue)](#extending-to-other-tools)
 
 ---
@@ -44,9 +44,11 @@ The **AI Project Risk Radar** automatically analyzes your project data and produ
 
 ## Live Dashboard
 
-Open the interactive dashboard:
+**GitHub does not run HTML files when you click them in the repo** — it only shows the source code.
 
-**→ [dashboard/index.html](./dashboard/index.html)**
+### View the dashboard right now (click this):
+
+**→ [Open Interactive Risk Dashboard](https://htmlpreview.github.io/?https://github.com/rpriyaprakasm-bit/ai-project-risk-radar/blob/main/dashboard/index.html)**
 
 It shows:
 - Overall risk level with visual gauge
@@ -55,7 +57,14 @@ It shows:
 - Positive signals & next steps
 - Risk breakdown by category
 
-The dashboard loads `risk_report.json` when available and falls back to sample data for demos.
+The dashboard loads sample data by default so you can demo it even before the workflow runs.
+
+### Optional: enable permanent GitHub Pages
+1. Repo → **Settings → Pages**
+2. Source: **Deploy from a branch**
+3. Branch: `main` / folder: `/dashboard`
+4. Save — then your dashboard will be at  
+   `https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`
 
 ---
 
@@ -80,18 +89,18 @@ The dashboard loads `risk_report.json` when available and falls back to sample d
 ## Quick Start (Grok version — recommended)
 
 1. Go to **Settings → Secrets and variables → Actions**
-2. Add secret: `XAI_API_KEY` (get one at [console.x.ai](https://console.x.ai))
+2. Add secret: `XAI_API_KEY` (get one at [console.x.ai](https://console.x.ai) — **add credits** or the API will return 403)
 3. Go to the **Actions** tab → **AI Project Risk Radar (Grok)** → **Run workflow**
 
 That’s it. The workflow will:
-- Collect GitHub issues/PRs (or use demo data)
+- Collect GitHub issues/PRs (or use demo data if the repo is empty)
 - Analyze risks with Grok
 - Post a Risk Report as a GitHub Issue
 - Update the dashboard data
 
 ### Claude version (optional)
 
-You can still use the original Claude workflow. Add `ANTHROPIC_API_KEY` and run the older workflow file if present.
+Add `ANTHROPIC_API_KEY` and run **AI Project Risk Radar (Claude)**.
 
 ---
 
