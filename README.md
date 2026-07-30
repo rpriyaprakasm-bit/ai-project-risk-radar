@@ -77,19 +77,6 @@ If you fork this and only see demo data: that’s expected until the workflow ru
 
 ---
 
-## Limitations (honest)
-
-- **GitHub only** for data today. Jira / Linear / Notion are stubs — same collector interface, not wired up yet.
-- **LLM judgment isn’t perfect.** It can over-rank noisy tickets or miss context that only exists in Slack.
-- **Needs API credits.** Without an `XAI_API_KEY` balance the Grok workflow fails hard.
-- **Dashboard is static HTML** after each run. No live websocket; refresh after the Action finishes.
-- **Pages setup is still manual** (GitHub requires you to click Source = Actions once).
-- I haven’t battle-tested this on a 500-issue monorepo. It was built for small–medium project boards.
-
-More detail: [LIMITATIONS.md](LIMITATIONS.md)
-
----
-
 ## Still on my list
 
 - [ ] Wire a real Jira collector (even read-only)
