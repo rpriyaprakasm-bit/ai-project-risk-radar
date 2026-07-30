@@ -1,12 +1,12 @@
 # AI Project Risk Radar
 
-I got tired of finding out about project problems *after* they already burned a sprint.
+**Early-warning risk visibility for project and operations teams — automated with AI.**
 
-Blockers sitting quiet for two weeks. One person owning three critical tickets. New scope landing with no estimate. Nobody was really “ignoring” risk — there was just too much noise to scan every day.
+In business operations and delivery work, risks rarely fail loudly on day one. They sit in tickets, inboxes, and status decks until they cost a sprint, a release, or a stakeholder conversation.
 
-So I built a small system that reads GitHub issues/PRs on a schedule, asks an LLM what’s actually worrying, and puts the result in a dashboard I can open in about 10 seconds.
+This project is a practical example of using AI to support **operations control**: pull signal from work tracking data, surface what matters, and put it in a dashboard leadership can scan in minutes — not another manual RAID scrub.
 
-Not a full PM platform. Just an early-warning layer.
+Built as a hands-on automation pattern using **Grok** (with optional Claude), GitHub Actions, and a simple HTML dashboard.
 
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-Automated-2088FF?logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![Grok](https://img.shields.io/badge/Powered%20by-Grok-000000?logo=x&logoColor=white)](https://x.ai)
@@ -14,101 +14,131 @@ Not a full PM platform. Just an early-warning layer.
 
 ---
 
-## Dashboard (what it looks like)
+## Why this exists (operations lens)
+
+Typical ops / PMO pain:
+
+- Blockers age quietly while status reports stay “green”
+- Risk logs are updated late or inconsistently
+- Leadership asks for a clear view; teams spend hours assembling it by hand
+
+**Risk Radar** automates the first pass:
+
+1. Collect open work items (GitHub issues/PRs today; Jira-style sources are the natural extension)
+2. Analyze with an LLM against a fixed risk framework
+3. Publish a structured report + visual dashboard (by category, severity, and recommended action)
+
+It is not a full PPM tool. It is an **AI-assisted control layer** — the same idea you would apply inside a Business Operations team or an AI Value Hub delivery pipeline.
+
+---
+
+## Dashboard
 
 ![Dashboard snapshot](docs/dashboard-preview.svg)
 
-**Open the live version:**  
-→ [Interactive dashboard](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
+**Live demo:** [Open interactive dashboard](https://raw.githack.com/rpriyaprakasm-bit/ai-project-risk-radar/main/docs/index.html)
 
-(GitHub Pages permanent URL once enabled: `https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`)
+(Permanent GitHub Pages URL, once enabled: `https://rpriyaprakasm-bit.github.io/ai-project-risk-radar/`)
 
----
-
-## What it actually does
-
-1. Collects open issues + PRs from GitHub (falls back to demo data if the repo is empty — useful for portfolio demos)
-2. Sends a structured prompt to **Grok** (or Claude if you prefer)
-3. Writes:
-   - a Risk Report as a GitHub Issue
-   - `risk_report.json`
-   - an HTML dashboard with category tiles, pie, bars, and action cards
-
-### Categories it looks for
-
-| Category | Rough idea |
-|----------|------------|
-| Blocker | Stuck work, external dependencies, “waiting on…” |
-| Schedule | Missed due dates, overloaded sprints |
-| People | Bus factor, missing coverage, access delays |
-| Quality | Flaky tests, error spikes |
-| Scope | Unestimated or late-arriving work |
-| Communication | Silent PRs / stale updates |
-
-I tried a pure **severity** view (Critical / High / Medium / Low) first. It was accurate but harder to act on in a standup. Category view won — PMs ask “what kind of problem?” before “how red is it?”
+**What you see:**
+- Category tiles (Blocker, Schedule, People, Quality, Scope, Communication)
+- Distribution and count charts
+- Overall risk level and summary for leadership scan
+- Risk cards grouped by category, with evidence and suggested actions
 
 ---
 
-## How to run it
+## What it does
+
+| Step | Output |
+|------|--------|
+| Collect | Open issues/PRs (or demo data for a reliable portfolio run) |
+| Analyze | Grok or Claude scores risks using a defined category model |
+| Report | Markdown risk report + GitHub Issue |
+| Visualize | HTML dashboard + JSON for reuse in other tools |
+
+### Risk categories
+
+| Category | What it flags |
+|----------|----------------|
+| **Blocker** | Stuck work, external dependencies, waiting-on items |
+| **Schedule** | Missed dates, overload, slip patterns |
+| **People** | Bus factor, coverage gaps, access delays |
+| **Quality** | Defect/test noise, error spikes |
+| **Scope** | Unestimated or late-breaking work |
+| **Communication** | Stale updates, silent critical items |
+
+Category-first layout was chosen on purpose: in standups and ops reviews, people ask *what kind of problem is this?* before *how red is the badge?*
+
+---
+
+## How this maps to real roles
+
+**Business Operations / Program Ops**  
+Automated risk scan + dashboard = less manual status assembly, earlier escalation, clearer ownership.
+
+**AI Value Hub / AI Enablement**  
+Example of a governed automation pattern: fixed intake of data → structured AI analysis → human-readable output → visible metrics. Useful as a template for other “scan → summarize → act” use cases (status packs, intake triage, meeting actions).
+
+**Tools demonstrated:** GitHub Actions, Grok, Claude, structured prompting, JSON + dashboard reporting — aligned with multi-LLM and automation work (Power Automate / n8n-style thinking, implemented here as code automation for a clean public demo).
+
+---
+
+## Quick start
 
 ### Grok (default)
 
-1. Repo **Settings → Secrets → Actions**
-2. Add `XAI_API_KEY` from [console.x.ai](https://console.x.ai)  
-   *(needs credits — empty balance returns 403)*
-3. **Actions → AI Project Risk Radar (Grok) → Run workflow**
+1. **Settings → Secrets → Actions** → add `XAI_API_KEY` ([console.x.ai](https://console.x.ai); credits required)
+2. **Actions → AI Project Risk Radar (Grok) → Run workflow**
 
 ### Claude (optional)
 
-Same flow with `ANTHROPIC_API_KEY` and the Claude workflow.
+Add `ANTHROPIC_API_KEY` and run the Claude workflow.
 
-### GitHub Pages (one-time)
+### Dashboard hosting
 
 1. **Settings → Pages → Source → GitHub Actions**
-2. Run the **Deploy Dashboard** workflow (or push again)
+2. Run **Deploy Dashboard** (or push to `main`)
 
 ---
 
-## What’s real vs demo
+## Demo vs live data
 
-Right now the dashboard ships with **rich demo risks** so the graphs aren’t empty on a fresh fork. When the collector finds real issues, those replace the sample set.
-
-If you fork this and only see demo data: that’s expected until the workflow runs against a repo with actual tickets.
+The dashboard includes **sample risks** so the demo is always populated for portfolio review. When the workflow runs against a repo with real issues, analysis can replace that sample set.
 
 ---
 
-## Still on my list
+## Roadmap
 
-- [ ] Wire a real Jira collector (even read-only)
-- [ ] Filter “noise” labels so chores don’t look like blockers
-- [ ] Weekly trend line (risk count over the last N runs)
-- [ ] Slack/email ping when overall risk jumps to Critical
-- [ ] Tighten the prompt so evidence quotes issue numbers more consistently
+- [ ] Jira (or similar) collector for enterprise work tracking
+- [ ] Noise filters so low-value tickets do not dominate the view
+- [ ] Trend across runs (is overall risk rising or falling?)
+- [ ] Alert when overall risk moves to Critical
+- [ ] Tighter evidence links back to ticket IDs
 
 ---
 
-## Layout of the repo
+## Repo layout
 
 ```text
-.github/workflows/     Grok + Claude + Pages deploy
-src/collectors/        GitHub first; others stubbed
-src/analyzers/         Grok / Claude prompts + parsing
-src/reporters/         Issue + JSON writers
-docs/                  Dashboard + snapshot + sample JSON
-prompts/               Prompt templates I iterate on
+.github/workflows/   Scheduled + manual runs (Grok / Claude / Pages)
+src/collectors/      Data sources (GitHub first; others stubbed)
+src/analyzers/       LLM analysis + structured output
+src/reporters/       Issue + JSON publishing
+docs/                Dashboard, snapshot, sample report data
+prompts/             Prompt templates
 ```
 
 ---
 
-## About AI use on this project
+## Design choices
 
-I used Grok heavily for scaffolding the dashboard HTML, workflow YAML, and first-pass analyzer code.  
-**I chose the problem, the category model, the demo scenarios, and when to throw away the severity-first UI.**
-
-If you’re reviewing this as a portfolio piece: ask me why blockers sit above scope, or how I’d plug in Linear — that’s the part that isn’t generated.
+- **AI for the first pass, humans for decisions** — the tool ranks and explains; owners still act.
+- **Category model over severity-only** — easier to assign and discuss in ops forums.
+- **Reusable pattern** — same flow supports status digests, intake scoring, or action extraction with different prompts and sources.
 
 ---
 
 ## License
 
-MIT — use it, break it, improve it.
+MIT
