@@ -1,10 +1,10 @@
 # AI Project Risk Radar
 
-I got tired of finding out about project problems *after* they already cost a sprint.
+I got tired of finding out about project problems *after* they already burned a sprint.
 
-Blockers sitting quiet for two weeks. One person owning three critical tickets. New scope landing with no estimate. Nobody was “ignoring” risk — there was just too much noise to scan every day.
+Blockers sitting quiet for two weeks. One person owning three critical tickets. New scope landing with no estimate. Nobody was really “ignoring” risk — there was just too much noise to scan every day.
 
-So I built a small system that reads GitHub issues/PRs on a schedule, asks an LLM what’s actually worrying, and dumps the result into a dashboard I can open in 10 seconds.
+So I built a small system that reads GitHub issues/PRs on a schedule, asks an LLM what’s actually worrying, and puts the result in a dashboard I can open in about 10 seconds.
 
 Not a full PM platform. Just an early-warning layer.
 
