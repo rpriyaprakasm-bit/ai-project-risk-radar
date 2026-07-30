@@ -1,13 +1,14 @@
 """
 GitHub data collector.
 Fetches open issues and recent pull requests for risk analysis.
+Falls back to realistic demo data when the repo is empty.
 """
 
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import urllib.request
 
@@ -31,7 +32,6 @@ def collect() -> Dict[str, Any]:
     repo = os.environ.get("GITHUB_REPOSITORY")  # e.g. owner/repo
 
     if not token or not repo:
-        # Fallback for local demo / testing
         print("Warning: GITHUB_TOKEN or GITHUB_REPOSITORY not set. Using demo data.")
         return _demo_data()
 
@@ -53,7 +53,7 @@ def collect() -> Dict[str, Any]:
             "assignees": [a["login"] for a in item.get("assignees", [])],
             "created_at": item["created_at"],
             "updated_at": item["updated_at"],
-            "due_date": None,  # GitHub issues don't have native due dates in basic API
+            "due_date": None,
             "body": (item.get("body") or "")[:1500],
             "comments_count": item.get("comments", 0),
             "url": item["html_url"],
@@ -75,6 +75,11 @@ def collect() -> Dict[str, Any]:
             "url": pr["html_url"],
         })
 
+    # Empty repo → use demo data so portfolio still shows a full report
+    if len(issues) == 0 and len(pull_requests) == 0:
+        print("No open issues/PRs found. Using realistic demo data for the report.")
+        return _demo_data()
+
     data = {
         "source": "github",
         "collected_at": datetime.now(timezone.utc).isoformat(),
@@ -87,7 +92,6 @@ def collect() -> Dict[str, Any]:
         },
     }
 
-    # Save for the analyzer
     out_path = Path("data/project_data.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(data, indent=2))
@@ -96,7 +100,7 @@ def collect() -> Dict[str, Any]:
 
 
 def _demo_data() -> Dict[str, Any]:
-    """Realistic demo data so the project works even without a live repo."""
+    """Realistic demo data so the project works even on an empty repo."""
     data = {
         "source": "github-demo",
         "collected_at": datetime.now(timezone.utc).isoformat(),
@@ -183,7 +187,7 @@ def _demo_data() -> Dict[str, Any]:
         "metadata": {
             "open_issues_count": 5,
             "open_prs_count": 1,
-            "note": "This is realistic demo data used when no live GitHub token is available.",
+            "note": "Demo data used because the repository had no open issues/PRs.",
         },
     }
 
