@@ -5,21 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Project Risk Radar — Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     body { background: #0b0f19; color: #e2e8f0; font-family: ui-sans-serif, system-ui, sans-serif; }
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.12); }
+    .glass { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(148, 163, 184, 0.12); }
     .badge-critical { background: #dc2626; }
     .badge-high { background: #ea580c; }
     .badge-medium { background: #ca8a04; }
     .badge-low { background: #16a34a; }
-    .bar-track { background: #1e293b; border-radius: 999px; height: 10px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+    .bar-track { background: #1e293b; border-radius: 999px; height: 12px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.7s ease; }
+    .tile-count { font-size: 2rem; font-weight: 700; line-height: 1; }
+    .vbar-col { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 48px; }
+    .vbar-track { width: 100%; max-width: 40px; height: 120px; background: #1e293b; border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; }
+    .vbar-fill { width: 100%; border-radius: 8px 8px 0 0; transition: height 0.7s ease; }
   </style>
 </head>
 <body class="min-h-screen p-4 md:p-8">
   <div class="max-w-6xl mx-auto">
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
         <h1 class="text-3xl font-bold tracking-tight text-white">AI Project Risk Radar</h1>
         <p class="text-slate-400 mt-1">Powered by Grok · Early warning for project risks</p>
@@ -30,7 +35,27 @@
       </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- TOP: Category tiles -->
+    <h2 class="text-sm uppercase tracking-wider text-slate-400 mb-3">Risks by Category</h2>
+    <div id="category-tiles" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6"></div>
+
+    <!-- TOP: Pie + Vertical bars as tiles -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
+      <div class="glass rounded-2xl p-5">
+        <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Distribution</h3>
+        <div class="flex flex-col sm:flex-row items-center gap-6">
+          <div id="pie-wrap" class="shrink-0"></div>
+          <div id="pie-legend" class="flex flex-col gap-2 text-sm w-full"></div>
+        </div>
+      </div>
+      <div class="glass rounded-2xl p-5">
+        <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Count by Category</h3>
+        <div id="vbars" class="flex items-end justify-between gap-2 h-40 px-1"></div>
+      </div>
+    </div>
+
+    <!-- Summary + Overall -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
       <div class="lg:col-span-2 glass rounded-2xl p-6">
         <h2 class="text-sm uppercase tracking-wider text-slate-400 mb-2">Summary</h2>
         <p id="summary" class="text-lg text-slate-100 leading-relaxed"></p>
@@ -40,41 +65,26 @@
         </div>
       </div>
       <div class="glass rounded-2xl p-6 flex flex-col items-center justify-center">
-        <h2 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Overall Risk</h2>
-        <div class="relative w-40 h-40">
-          <canvas id="riskGauge"></canvas>
-          <div class="absolute inset-0 flex items-center justify-center">
+        <h2 class="text-sm uppercase tracking-wider text-slate-400 mb-3">Overall Risk</h2>
+        <div id="gauge-ring" class="relative w-36 h-36 flex items-center justify-center rounded-full" style="background: conic-gradient(#ea580c 0% 75%, #1e293b 75% 100%);">
+          <div class="absolute inset-3 rounded-full bg-slate-800 flex items-center justify-center">
             <span id="gauge-label" class="text-2xl font-bold"></span>
           </div>
         </div>
       </div>
     </div>
 
-    <h2 class="text-xl font-semibold mb-4 text-white">Top Risks</h2>
-    <div id="risks-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
-
-    <!-- Category graphs -->
-    <h2 class="text-xl font-semibold mb-4 text-white">Graphs by Risk Category</h2>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <div class="glass rounded-2xl p-6">
-        <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Distribution (Pie)</h3>
-        <div class="h-64 flex items-center justify-center">
-          <canvas id="categoryPie"></canvas>
-        </div>
-      </div>
-      <div class="glass rounded-2xl p-6">
-        <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Count by Category (Bar)</h3>
-        <div class="h-64"><canvas id="categoryBar"></canvas></div>
-      </div>
-    </div>
-
-    <!-- CSS fallback bars — always visible -->
+    <!-- Horizontal bars tile -->
     <div class="glass rounded-2xl p-6 mb-8">
       <h3 class="text-sm uppercase tracking-wider text-slate-400 mb-4">Category Breakdown</h3>
       <div id="category-bars" class="space-y-4"></div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Top risks -->
+    <h2 class="text-xl font-semibold mb-4 text-white">Top Risks</h2>
+    <div id="risks-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
       <div class="glass rounded-2xl p-6">
         <h2 class="text-sm uppercase tracking-wider text-emerald-400 mb-3">Positive Signals</h2>
         <ul id="positive-list" class="space-y-2 text-slate-300"></ul>
@@ -137,20 +147,85 @@
       return cats;
     }
 
-    function renderCategoryBars(cats) {
+    function buildPieSVG(cats) {
+      var labels = Object.keys(cats);
+      var values = Object.values(cats);
+      var total = values.reduce(function(a, b) { return a + b; }, 0) || 1;
+      var size = 140, r = 56, cx = 70, cy = 70;
+      var circ = 2 * Math.PI * r;
+      var offset = 0;
+      var segments = labels.map(function(label, i) {
+        var frac = values[i] / total;
+        var len = frac * circ;
+        var color = CATEGORY_COLORS[label] || "#38bdf8";
+        var el = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="28" ' +
+          'stroke-dasharray="' + len + ' ' + (circ - len) + '" stroke-dashoffset="' + (-offset) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')" />';
+        offset += len;
+        return el;
+      }).join("");
+      return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#1e293b" stroke-width="28" />' +
+        segments +
+        '<text x="' + cx + '" y="' + (cy + 6) + '" text-anchor="middle" fill="#e2e8f0" font-size="18" font-weight="700">' + total + '</text>' +
+        '<text x="' + cx + '" y="' + (cy + 22) + '" text-anchor="middle" fill="#94a3b8" font-size="10">risks</text>' +
+        '</svg>';
+    }
+
+    function renderCategoryTiles(cats) {
+      var el = document.getElementById("category-tiles");
+      el.innerHTML = Object.keys(cats).map(function(label) {
+        var color = CATEGORY_COLORS[label] || "#38bdf8";
+        var count = cats[label];
+        return '<div class="glass rounded-xl p-4 text-center border-t-4" style="border-top-color:' + color + '">' +
+          '<div class="tile-count" style="color:' + color + '">' + count + '</div>' +
+          '<div class="text-xs text-slate-400 mt-2 font-medium">' + label + '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    function renderVBars(cats) {
+      var el = document.getElementById("vbars");
+      var max = Math.max.apply(null, Object.values(cats)) || 1;
+      el.innerHTML = Object.keys(cats).map(function(label) {
+        var count = cats[label];
+        var pct = Math.round((count / max) * 100);
+        var color = CATEGORY_COLORS[label] || "#38bdf8";
+        return '<div class="vbar-col">' +
+          '<div class="text-xs text-slate-300 mb-1 font-semibold">' + count + '</div>' +
+          '<div class="vbar-track"><div class="vbar-fill" style="height:' + pct + '%;background:' + color + '"></div></div>' +
+          '<div class="text-[10px] text-slate-400 mt-2 text-center leading-tight">' + label + '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    function renderHBars(cats) {
       var el = document.getElementById("category-bars");
       var total = Object.values(cats).reduce(function(a, b) { return a + b; }, 0) || 1;
-      var labels = Object.keys(cats);
-      el.innerHTML = labels.map(function(label) {
+      el.innerHTML = Object.keys(cats).map(function(label) {
         var count = cats[label];
         var pct = Math.round((count / total) * 100);
         var color = CATEGORY_COLORS[label] || "#38bdf8";
         return '<div>' +
-          '<div class="flex justify-between text-sm mb-1">' +
+          '<div class="flex justify-between text-sm mb-1.5">' +
             '<span class="text-slate-200 font-medium">' + label + '</span>' +
-            '<span class="text-slate-400">' + count + ' risk' + (count > 1 ? 's' : '') + ' · ' + pct + '%</span>' +
+            '<span class="text-slate-400">' + count + ' risk' + (count !== 1 ? 's' : '') + ' · ' + pct + '%</span>' +
           '</div>' +
           '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+        '</div>';
+      }).join("");
+    }
+
+    function renderPie(cats) {
+      document.getElementById("pie-wrap").innerHTML = buildPieSVG(cats);
+      var total = Object.values(cats).reduce(function(a, b) { return a + b; }, 0) || 1;
+      document.getElementById("pie-legend").innerHTML = Object.keys(cats).map(function(label) {
+        var count = cats[label];
+        var pct = Math.round((count / total) * 100);
+        var color = CATEGORY_COLORS[label] || "#38bdf8";
+        return '<div class="flex items-center gap-2">' +
+          '<span class="w-3 h-3 rounded-sm shrink-0" style="background:' + color + '"></span>' +
+          '<span class="text-slate-300 flex-1">' + label + '</span>' +
+          '<span class="text-slate-400">' + pct + '%</span>' +
         '</div>';
       }).join("");
     }
@@ -168,6 +243,17 @@
         trendEl.className = "ml-2 font-medium " + (data.trend === "increasing" ? "text-red-400" : data.trend === "decreasing" ? "text-emerald-400" : "text-slate-300");
         document.getElementById("trend-explanation").textContent = data.trend_explanation || "";
         document.getElementById("gauge-label").textContent = data.overall_risk_level || "";
+
+        var score = severityScore(data.overall_risk_level);
+        var gColor = severityColor(data.overall_risk_level);
+        document.getElementById("gauge-ring").style.background =
+          "conic-gradient(" + gColor + " 0% " + score + "%, #1e293b " + score + "% 100%)";
+
+        var cats = countByCategory(data.risks);
+        renderCategoryTiles(cats);
+        renderPie(cats);
+        renderVBars(cats);
+        renderHBars(cats);
 
         var container = document.getElementById("risks-container");
         container.innerHTML = "";
@@ -195,58 +281,6 @@
 
         document.getElementById("next-steps").innerHTML =
           (data.next_steps || []).map(function(s) { return '<li>' + s + '</li>'; }).join("") || "<li class='text-slate-500'>None</li>";
-
-        var cats = countByCategory(data.risks);
-        renderCategoryBars(cats);
-
-        if (typeof Chart !== "undefined") {
-          try {
-            var score = severityScore(data.overall_risk_level);
-            new Chart(document.getElementById("riskGauge"), {
-              type: "doughnut",
-              data: { datasets: [{ data: [score, 100 - score], backgroundColor: [severityColor(data.overall_risk_level), "#1e293b"], borderWidth: 0, cutout: "75%" }] },
-              options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-            });
-          } catch (e) {}
-
-          var labels = Object.keys(cats);
-          var values = Object.values(cats);
-          var colors = labels.map(function(l) { return CATEGORY_COLORS[l] || "#38bdf8"; });
-
-          try {
-            new Chart(document.getElementById("categoryPie"), {
-              type: "doughnut",
-              data: {
-                labels: labels,
-                datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: "#0b0f19" }]
-              },
-              options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: {
-                  legend: { position: "right", labels: { color: "#cbd5e1", boxWidth: 12, padding: 12 } }
-                }
-              }
-            });
-          } catch (e) {}
-
-          try {
-            new Chart(document.getElementById("categoryBar"), {
-              type: "bar",
-              data: {
-                labels: labels,
-                datasets: [{ label: "Risks", data: values, backgroundColor: colors, borderRadius: 6 }]
-              },
-              options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                  x: { ticks: { color: "#94a3b8" }, grid: { color: "#1e293b" } },
-                  y: { ticks: { color: "#94a3b8", stepSize: 1 }, grid: { color: "#1e293b" }, beginAtZero: true }
-                }
-              }
-            });
-          } catch (e) {}
-        }
       } catch (err) {
         console.error("Render error", err);
       }
