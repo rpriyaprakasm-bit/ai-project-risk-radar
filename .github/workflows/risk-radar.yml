@@ -1,34 +1,35 @@
-name: AI Project Risk Radar
+name: AI Project Risk Radar (Claude)
 
 on:
   schedule:
-    # Runs every Monday at 08:00 UTC
     - cron: "0 8 * * 1"
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:
 
 permissions:
   contents: read
   issues: write
   pull-requests: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   risk-radar:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Install dependencies
         run: |
-          pip install anthropic pyyaml
+          pip install anthropic
 
       - name: Collect project data (GitHub)
-        id: collect
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
