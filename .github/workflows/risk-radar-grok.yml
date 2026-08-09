@@ -1,8 +1,14 @@
 name: AI Project Risk Radar (Grok)
 
+# GRAPH: explicit nodes and failure branches
+# collect -> analyze (Grok|heuristic) -> verify -> publish -> dashboard -> commit
+#
+# LOOP: verify_risk_report must pass before publish/commit
+# HARNESS: secrets, demo data fallback, isolated runner, traces via Actions logs
+
 on:
   schedule:
-    - cron: "0 8 * * 1"   # Every Monday 08:00 UTC
+    - cron: "0 8 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -11,54 +17,71 @@ permissions:
   pull-requests: read
 
 env:
-  # Use Node 24 for JavaScript actions (removes deprecation warning)
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   risk-radar:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: "[HARNESS] Checkout"
         uses: actions/checkout@v5
 
-      - name: Set up Python
+      - name: "[HARNESS] Set up Python"
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: |
-          pip install openai
+      - name: "[HARNESS] Install dependencies"
+        run: pip install openai
 
-      - name: Collect project data (GitHub)
+      - name: "[NODE] Collect project data"
+        id: collect
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m src.collectors.github_collector
+        run: python -m src.collectors.github_collector
 
-      - name: Analyze risks with Grok
+      - name: "[NODE] Analyze risks (Grok with heuristic fallback)"
+        id: analyze
         env:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-        run: |
-          python -m src.analyzers.risk_analyzer_grok
+        run: python -m src.analyzers.risk_analyzer_grok
 
-      - name: Publish Risk Report as Issue
+      - name: "[LOOP] Verify report quality"
+        id: verify
+        run: python -m src.validators.verify_risk_report
+
+      - name: "[NODE] Publish Risk Report as Issue"
+        id: publish
+        if: success()
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python -m src.reporters.report_generator
+        run: python -m src.reporters.report_generator
 
-      - name: Copy report JSON into dashboard folder
+      - name: "[NODE] Copy report JSON into dashboard"
+        if: success()
         run: |
           mkdir -p dashboard
-          if [ -f data/risk_report.json ]; then
-            cp data/risk_report.json dashboard/risk_report.json
-          fi
+          cp data/risk_report.json dashboard/risk_report.json
 
-      - name: Commit dashboard data (optional)
+      - name: "[NODE] Commit dashboard data"
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add dashboard/risk_report.json data/risk_report.md data/risk_report.json || true
           git diff --staged --quiet || git commit -m "chore: update risk report $(date -u +%Y-%m-%d)"
           git push || true
+
+      - name: "[GRAPH] Run summary"
+        if: always()
+        run: |
+          echo "collect=${{ steps.collect.outcome }}"
+          echo "analyze=${{ steps.analyze.outcome }}"
+          echo "verify=${{ steps.verify.outcome }}"
+          echo "publish=${{ steps.publish.outcome }}"
+          if [ ! -f data/risk_report.json ]; then
+            echo "No risk_report.json produced"
+            exit 1
+          fi
+          python -c "import json; d=json.load(open('data/risk_report.json')); print('source=', d.get('source'), 'level=', d.get('overall_risk_level'))"
