@@ -1,68 +1,19 @@
 {
-  "date": "2026-08-10",
-  "overall_risk_level": "Critical",
-  "summary": "Local heuristic analysis (xAI team has no credits/licenses (403)). Overall risk Critical from 5 issues and 1 PRs. Top themes: People, Schedule, Scope.",
+  "date": "2026-08-17",
+  "overall_risk_level": "Medium",
+  "summary": "Local heuristic analysis (xAI team has no credits/licenses (403)). Overall risk Medium from 1 issues and 0 PRs. Top themes: Scope.",
   "risks": [
     {
-      "title": "Payment gateway integration is blocked by missing API keys",
-      "category": "Schedule",
-      "severity": "Critical",
-      "confidence": "Medium",
-      "evidence": "Labels: blocker, backend, high-priority. Comments: 8. Due: 2026-07-25. We cannot proceed with the checkout flow until the payment provider gives us production keys. Waiting for 2 weeks already.",
-      "recommended_action": "Re-baseline the date past 2026-07-25 or cut scope; name a single accountable owner."
-    },
-    {
-      "title": "Fix flaky tests in checkout suite",
-      "category": "Schedule",
-      "severity": "Critical",
-      "confidence": "Medium",
-      "evidence": "Labels: bug, quality. Comments: 12. Due: 2026-07-15. Tests fail randomly on CI. Has been open for a while.",
-      "recommended_action": "Re-baseline the date past 2026-07-15 or cut scope; name a single accountable owner."
-    },
-    {
-      "title": "Critical: Database migration for new order schema",
-      "category": "Schedule",
-      "severity": "Critical",
-      "confidence": "Medium",
-      "evidence": "Labels: backend, high-priority, database. Comments: 15. Due: 2026-07-20. This is required before we can ship the new order flow. Alice is the only one who knows the old schema.",
-      "recommended_action": "Re-baseline the date past 2026-07-20 or cut scope; name a single accountable owner."
-    },
-    {
-      "title": "Key-person load on alice",
-      "category": "People",
-      "severity": "High",
-      "confidence": "High",
-      "evidence": "alice is assigned to 3 open items.",
-      "recommended_action": "Rebalance work away from alice or add backup owners."
-    },
-    {
-      "title": "Add new discount engine for Black Friday",
+      "title": "AI Risk Radar Report \u2014 2026-08-10",
       "category": "Scope",
       "severity": "Medium",
       "confidence": "Medium",
-      "evidence": "Labels: feature, unestimated. Comments: 1. Due: n/a. Marketing wants a completely new discount rules engine. No estimate yet.",
+      "evidence": "Labels: risk-radar, automated. Comments: 0. Due: n/a. # Project Risk Report \u2014 2026-08-10\n\n> **Mode:** Local heuristic fallback (xAI team has no credits/licenses (403)).  \n> Grok analysis was skipped or unavailable. Add xAI credits to enable AI narrative.\n\n## Overall risk: **Critical**\n\nLocal heuristic analysis (xAI team has no credits/licenses (403)).",
       "recommended_action": "Assign a primary owner and a backup; protect capacity for critical path."
-    },
-    {
-      "title": "Update user profile page",
-      "category": "Scope",
-      "severity": "Medium",
-      "confidence": "Medium",
-      "evidence": "Labels: frontend. Comments: 3. Due: n/a. Small UI improvements.",
-      "recommended_action": "Track in backlog with next review date."
-    },
-    {
-      "title": "Long-running WIP PR: WIP: Payment provider sandbox integration",
-      "category": "Schedule",
-      "severity": "Medium",
-      "confidence": "Medium",
-      "evidence": "Open PR by alice; labels: wip.",
-      "recommended_action": "Time-box remaining work or split into reviewable PRs."
     }
   ],
   "positive_signals": [
-    "Some work items are labeled and trackable.",
-    "Delivery activity visible via open pull requests."
+    "Structured issue data was available for rule-based scoring."
   ],
   "trend": "stable",
   "trend_explanation": "Heuristic single-snapshot analysis; no multi-week history.",
